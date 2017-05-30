@@ -1,6 +1,5 @@
 package com.ears.advcomp.ears3;
 
-import android.content.Context;
 import android.content.Intent;
 import android.hardware.Camera;
 import android.os.Environment;
@@ -8,11 +7,8 @@ import android.support.constraint.ConstraintLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.SurfaceHolder;
-import android.view.SurfaceView;
 import android.view.View;
 import android.widget.Button;
-import android.widget.FrameLayout;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -36,7 +32,7 @@ public class AddEarActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_ear);
         camera.setDisplayOrientation(90);
-        cameraPreviewLayout = (ConstraintLayout) findViewById(R.id.cameraPreview);
+        cameraPreviewLayout = (ConstraintLayout) findViewById(R.id.addEarCameraPreview);
         cameraP = new CameraPreview(this,camera);
         Camera.Parameters parameters = camera.getParameters();
         List<Camera.Size> sizes = parameters.getSupportedPreviewSizes();
@@ -58,12 +54,14 @@ public class AddEarActivity extends AppCompatActivity {
         super.onStop();
     }
 
+
+
     @Override
     protected void onRestart() {
         super.onRestart();
         camera.startPreview();
         cameraP = new CameraPreview(this, camera);
-        addEarButton = (Button) findViewById(R.id.takePicture);
+        addEarButton = (Button) findViewById(R.id.addEarTakePicture);
         addEarButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -106,68 +104,7 @@ public class AddEarActivity extends AppCompatActivity {
         }
     };
 
-    /** A basic Camera preview class */
-    public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback {
-        private SurfaceHolder mHolder;
-        private Camera mCamera;
-
-        public CameraPreview(Context context, Camera camera) {
-            super(context);
-            mCamera = camera;
-
-            // Install a SurfaceHolder.Callback so we get notified when the
-            // underlying surface is created and destroyed.
-            mHolder = getHolder();
-            mHolder.addCallback(this);
-            // deprecated setting, but required on Android versions prior to 3.0
-            mHolder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
-        }
-
-        public void surfaceCreated(SurfaceHolder holder) {
-            // The Surface has been created, now tell the camera where to draw the preview.
-            try {
-                mCamera.setPreviewDisplay(holder);
-                mCamera.startPreview();
-            } catch (IOException e) {
-                Log.d("Darron", "Error setting camera preview: " + e.getMessage());
-            }
-        }
-
-        public void surfaceDestroyed(SurfaceHolder holder) {
-            // empty. Take care of releasing the Camera preview in your activity.
-        }
-
-        public void surfaceChanged(SurfaceHolder holder, int format, int w, int h) {
-            // If your preview can change or rotate, take care of those events here.
-            // Make sure to stop the preview before resizing or reformatting it.
-
-            if (mHolder.getSurface() == null){
-                // preview surface does not exist
-                return;
-            }
-
-            // stop preview before making changes
-            try {
-                mCamera.stopPreview();
-            } catch (Exception e){
-                // ignore: tried to stop a non-existent preview
-            }
-
-            // set preview size and make any resize, rotate or
-            // reformatting changes here
-
-            // start preview with new settings
-            try {
-                mCamera.setPreviewDisplay(mHolder);
-                mCamera.startPreview();
-
-            } catch (Exception e){
-                Log.d("Darron", "Error starting camera preview: " + e.getMessage());
-            }
-        }
-    }
-
-    private Camera.Size getOptimalPreviewSize(List<Camera.Size> sizes, int w, int h) {
+    public Camera.Size getOptimalPreviewSize(List<Camera.Size> sizes, int w, int h) {
         final double ASPECT_TOLERANCE = 0.05;
         double targetRatio = (double) w/h;
 
@@ -200,7 +137,7 @@ public class AddEarActivity extends AppCompatActivity {
         }
         return optimalSize;
     }
-    private File createImageFile() throws IOException {
+    public File createImageFile() throws IOException {
         // Create an image file name
         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
         String imageFileName = "JPEG_" + timeStamp + "_";
@@ -215,5 +152,4 @@ public class AddEarActivity extends AppCompatActivity {
         mCurrentPhotoPath = image.getAbsolutePath();
         return image;
     }
-
 }

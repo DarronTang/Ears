@@ -2,13 +2,13 @@
 <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/cameraPreview"
+    android:id="@+id/addEarCameraPreview"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="com.ears.advcomp.ears3.AddEarActivity">
 
     <SurfaceView
-        android:id="@+id/surfaceView"
+        android:id="@+id/addEarSurfaceView"
         android:layout_width="375dp"
         android:layout_height="397dp"
         android:layout_marginBottom="8dp"
@@ -23,7 +23,7 @@
         app:layout_constraintVertical_bias="0.734" />
 
     <Button
-        android:id="@+id/takePicture"
+        android:id="@+id/addEarTakePicture"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
