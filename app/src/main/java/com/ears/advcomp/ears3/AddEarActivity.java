@@ -54,25 +54,28 @@ public class AddEarActivity extends AppCompatActivity {
         super.onStop();
     }
 
-
+    private void setListener(){
+        addEarButton = (Button) findViewById(R.id.addEarTakePicture);
+        addEarButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                camera.takePicture(null, null, mPicture);
+                //TODO Perform IRT
+                //TODO Perform Invariant moment calculation
+                //TODO Open AddEarFormActivity with inv moment in intent
+                Intent addEarFormIntent = new Intent(getApplicationContext(),AddEarFormActivity.class);
+                startActivity(addEarFormIntent);
+            }
+        });
+    }
 
     @Override
     protected void onRestart() {
         super.onRestart();
         camera.startPreview();
         cameraP = new CameraPreview(this, camera);
-        addEarButton = (Button) findViewById(R.id.addEarTakePicture);
-        addEarButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                camera.takePicture(null, null, mPicture);
-                pictureCount--;
-                if(pictureCount == 0){
-                    Intent addEarFormIntent = new Intent(getApplicationContext(),AddEarFormActivity.class);
-                    startActivity(addEarFormIntent);
-                }
-            }
-        });
+        setListener();
+
     }
 
     private Camera.PictureCallback mPicture = new Camera.PictureCallback() {

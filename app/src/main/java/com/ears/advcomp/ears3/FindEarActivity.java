@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.Toast;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -22,10 +23,11 @@ public class FindEarActivity extends AppCompatActivity {
 
     ConstraintLayout cameraPreviewLayout;
     CameraPreview cameraP = null;
-    Button addEarButton;
+    Button findEarButton;
     String mCurrentPhotoPath;
     Camera camera = Camera.open();
     int pictureCount;
+    File image;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,6 +45,23 @@ public class FindEarActivity extends AppCompatActivity {
         camera.setParameters(parameters);
         pictureCount = 5;
         cameraPreviewLayout.addView(cameraP);
+        setListener();
+    }
+
+    private void setListener(){
+
+        findEarButton = (Button) findViewById(R.id.findEarTakePicture);
+        findEarButton.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View view) {
+                camera.takePicture(null, null, mPicture);
+                //TODO Perform IRT
+                //TODO Perform Invariant moment calculation
+                //TODO Find closest match in csv
+                Toast.makeText(getApplicationContext(), "Closest Match: ",
+                        Toast.LENGTH_LONG).show();
+            }
+        });
     }
 
     public Camera.Size getOptimalPreviewSize(List<Camera.Size> sizes, int w, int h) {
@@ -110,18 +129,6 @@ public class FindEarActivity extends AppCompatActivity {
         super.onRestart();
         camera.startPreview();
         cameraP = new CameraPreview(this, camera);
-        addEarButton = (Button) findViewById(R.id.findEarTakePicture);
-        addEarButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                camera.takePicture(null, null, mPicture);
-                pictureCount--;
-                if(pictureCount == 0){
-                    Intent addEarFormIntent = new Intent(getApplicationContext(),AddEarFormActivity.class);
-                    startActivity(addEarFormIntent);
-                }
-            }
-        });
     }
 
     private Camera.PictureCallback mPicture = new Camera.PictureCallback() {

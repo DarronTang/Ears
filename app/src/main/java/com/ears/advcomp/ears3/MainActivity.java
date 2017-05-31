@@ -65,9 +65,8 @@ public class MainActivity extends AppCompatActivity {
 
                 try {
                     PrintWriter out = new PrintWriter(earCSV);
-                    out.write("id,first_name,last_name,inv_moment\n");
-                    out.write("1,Darron,Tang,10");
-                    out.flush();
+                    out.write("first_name,last_name,inv_moment\n");
+                    out.close();
                 } catch (FileNotFoundException e) {
                     Log.d("Darron", "File not found: " + e.getMessage());
                 } catch (IOException e) {
