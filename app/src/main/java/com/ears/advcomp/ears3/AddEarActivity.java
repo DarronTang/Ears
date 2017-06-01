@@ -22,6 +22,8 @@ import java.util.List;
 
 public class AddEarActivity extends AppCompatActivity {
 
+    private static final String LOG_TAG = "Darron";
+
     ConstraintLayout cameraPreviewLayout;
     CameraPreview cameraP = null;
     Button addEarButton;
@@ -87,7 +89,7 @@ public class AddEarActivity extends AppCompatActivity {
             try {
                 pictureFile = createImageFile();
                 if (pictureFile == null){
-                    Log.e("Darron", "Error creating media file, check storage permissions ");
+                    Log.e(LOG_TAG, "Error creating media file, check storage permissions ");
                     return;
                 }
 
@@ -96,15 +98,15 @@ public class AddEarActivity extends AppCompatActivity {
                     fos.write(data);
                     fos.close();
                     postPicture();
-                    Log.e("Darron", "onPictureTaken: "+ pictureFile.getAbsolutePath());
+                    Log.e(LOG_TAG, "onPictureTaken: "+ pictureFile.getAbsolutePath());
                 } catch (FileNotFoundException e) {
-                    Log.e("Darron", "File not found: " + e.getMessage());
+                    Log.e(LOG_TAG, "File not found: " + e.getMessage());
                 } catch (IOException e) {
-                    Log.e("Darron", "Error accessing file: " + e.getMessage());
+                    Log.e(LOG_TAG, "Error accessing file: " + e.getMessage());
                 }
 
             } catch(Exception e){
-                Log.e("Darron", "onPictureTaken:" + e.getMessage());
+                Log.e(LOG_TAG, "onPictureTaken:" + e.getMessage());
             }
         }
 
