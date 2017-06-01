@@ -1,6 +1,8 @@
 package com.ears.advcomp.ears3;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.hardware.Camera;
 import android.os.Environment;
 import android.support.constraint.ConstraintLayout;
@@ -42,6 +44,11 @@ public class FindEarActivity extends AppCompatActivity {
         Camera.Size optimalSize = getOptimalPreviewSize(sizes, getResources().getDisplayMetrics().widthPixels, getResources().getDisplayMetrics().heightPixels);
         parameters.setPreviewSize(optimalSize.width, optimalSize.height);
         parameters.setFocusMode(Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE);
+        List<Camera.Size> pictureSizes = parameters.getSupportedPictureSizes();
+        parameters.setPictureSize(pictureSizes.get(1).width,pictureSizes.get(1).height);
+        parameters.setJpegQuality(100);
+        parameters.setRotation(90);
+        camera.setParameters(parameters);
         camera.setParameters(parameters);
         pictureCount = 5;
         cameraPreviewLayout.addView(cameraP);
@@ -55,6 +62,9 @@ public class FindEarActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 camera.takePicture(null, null, mPicture);
+                File root = Environment.getExternalStorageDirectory();
+                Log.e("Darron", "onClick: "+root);
+//                Bitmap bMap = BitmapFactory.decodeFile(root+"/images/01.jpg");
                 //TODO Perform IRT
                 //TODO Perform Invariant moment calculation
                 //TODO Find closest match in csv
