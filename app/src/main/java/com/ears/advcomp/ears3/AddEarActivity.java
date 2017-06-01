@@ -27,6 +27,7 @@ public class AddEarActivity extends AppCompatActivity {
     Button addEarButton;
     String mCurrentPhotoPath;
     Camera camera = Camera.open();
+    Bitmap bMap;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,14 +66,6 @@ public class AddEarActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 camera.takePicture(null, null, mPicture);
-                File root = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
-                Bitmap bMap = BitmapFactory.decodeFile(root+mCurrentPhotoPath);
-                //TODO Perform IRT
-                //TODO Perform Invariant moment calculation
-
-                //TODO Open AddEarFormActivity with inv moment in intent
-                Intent addEarFormIntent = new Intent(getApplicationContext(),AddEarFormActivity.class);
-                startActivity(addEarFormIntent);
             }
         });
     }
@@ -102,6 +95,7 @@ public class AddEarActivity extends AppCompatActivity {
                     FileOutputStream fos = new FileOutputStream(pictureFile);
                     fos.write(data);
                     fos.close();
+                    postPicture();
                     Log.e("Darron", "onPictureTaken: "+ pictureFile.getAbsolutePath());
                 } catch (FileNotFoundException e) {
                     Log.e("Darron", "File not found: " + e.getMessage());
@@ -113,7 +107,18 @@ public class AddEarActivity extends AppCompatActivity {
                 Log.e("Darron", "onPictureTaken:" + e.getMessage());
             }
         }
+
     };
+
+    private void postPicture(){
+        File root = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+        bMap = BitmapFactory.decodeFile(root+"/"+mCurrentPhotoPath);
+        //TODO Perform IRT
+        //TODO Perform Invariant moment calculation
+        //TODO Open AddEarFormActivity with inv moment in intent
+        Intent addEarFormIntent = new Intent(getApplicationContext(),AddEarFormActivity.class);
+        startActivity(addEarFormIntent);
+    }
 
     public Camera.Size getOptimalPreviewSize(List<Camera.Size> sizes, int w, int h) {
         final double ASPECT_TOLERANCE = 0.05;
