@@ -3,9 +3,12 @@ package com.ears.advcomp.ears3;
 import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.net.Uri;
 import android.os.Environment;
+import android.provider.MediaStore;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.content.FileProvider;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -18,6 +21,8 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import static android.R.attr.data;
 
@@ -31,6 +36,7 @@ public class MainActivity extends AppCompatActivity {
     Button addEar;
     Button findEar;
     File earCSV;
+    String mCurrentPhotoPath;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,8 +50,7 @@ public class MainActivity extends AppCompatActivity {
         addEar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent addEarIntent = new Intent(getApplicationContext(),AddEarActivity.class);
-                startActivity(addEarIntent);
+                dispatchTakePictureIntent();
             }
         });
         findEar.setOnClickListener(new View.OnClickListener() {
@@ -77,21 +82,47 @@ public class MainActivity extends AppCompatActivity {
         } catch (IOException e){
             Log.e("Darron", "onCreate: "+e.getMessage());
         }
+    }
 
-//        earCSV = new File(Environment.getExternalStorageDirectory().getAbsolutePath()
-//                + "/ears.csv");
-//        if(!earCSV.exists()) {
-//            try {
-//                earCSV.createNewFile();
-//            } catch (IOException e){
-//                Log.e("Darron", "onCreate: "+e.getMessage());
-//            }
-//        }
+    static final int REQUEST_TAKE_PHOTO = 1;
 
+    private void dispatchTakePictureIntent() {
+        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        // Ensure that there's a camera activity to handle the intent
+        if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
+            // Create the File where the photo should go
+            File photoFile = null;
+            try {
+                photoFile = createImageFile();
+            } catch (IOException ex) {
+                // Error occurred while creating the File
+                Log.e("Darron", "dispatchTakePictureIntent: " + ex.getMessage());
+            }
+            // Continue only if the File was successfully created
+            if (photoFile != null) {
+                Uri photoURI = FileProvider.getUriForFile(this,
+                        "com.example.android.fileprovider",
+                        photoFile);
+                takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
+                startActivityForResult(takePictureIntent, REQUEST_TAKE_PHOTO);
+            }
+        }
+    }
 
-        // Example of a call to a native method
-//        TextView tv = (TextView) findViewById(R.id.sample_text);
-//        tv.setText(stringFromJNI());
+    private File createImageFile() throws IOException {
+        // Create an image file name
+        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+        String imageFileName = "JPEG_" + timeStamp + "_";
+        File storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+        File image = File.createTempFile(
+                imageFileName,  /* prefix */
+                ".jpg",         /* suffix */
+                storageDir      /* directory */
+        );
+
+        // Save a file: path for use with ACTION_VIEW intents
+        mCurrentPhotoPath = image.getAbsolutePath();
+        return image;
     }
 
     protected void checkPermissions(){
