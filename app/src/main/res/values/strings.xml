@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">Ears3</string>
+    <string name="no_ext_storage_title">No external storage detected</string>
+    <string name="no_ext_storage_body">Either your device\'s SD card has been removed or you\'re
+        currently connected to your computer. Please either reattach your SD card or
+        disconnect your device from your computer, then restart this app.</string>
 </resources>
