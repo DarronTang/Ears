@@ -1,6 +1,8 @@
 package com.ears.advcomp.ears3;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.hardware.Camera;
 import android.os.Environment;
 import android.support.constraint.ConstraintLayout;
@@ -62,11 +64,12 @@ public class AddEarActivity extends AppCompatActivity {
         addEarButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Log.e("Darron", "onClick: Got Here 1");
                 camera.takePicture(null, null, mPicture);
-                Log.e("Darron", "onClick: What.");
+                File root = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+                Bitmap bMap = BitmapFactory.decodeFile(root+mCurrentPhotoPath);
                 //TODO Perform IRT
                 //TODO Perform Invariant moment calculation
+
                 //TODO Open AddEarFormActivity with inv moment in intent
                 Intent addEarFormIntent = new Intent(getApplicationContext(),AddEarFormActivity.class);
                 startActivity(addEarFormIntent);
@@ -88,7 +91,6 @@ public class AddEarActivity extends AppCompatActivity {
         @Override
         public void onPictureTaken(byte[] data, Camera camera) {
             File pictureFile;
-            Log.e("Darron", "onPictureTaken: Got Here");
             try {
                 pictureFile = createImageFile();
                 if (pictureFile == null){

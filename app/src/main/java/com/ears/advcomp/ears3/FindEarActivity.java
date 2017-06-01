@@ -1,6 +1,8 @@
 package com.ears.advcomp.ears3;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.hardware.Camera;
 import android.os.Environment;
 import android.support.constraint.ConstraintLayout;
@@ -60,6 +62,9 @@ public class FindEarActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 camera.takePicture(null, null, mPicture);
+                File root = Environment.getExternalStorageDirectory();
+                Log.e("Darron", "onClick: "+root);
+//                Bitmap bMap = BitmapFactory.decodeFile(root+"/images/01.jpg");
                 //TODO Perform IRT
                 //TODO Perform Invariant moment calculation
                 //TODO Find closest match in csv
