@@ -1,9 +1,7 @@
 package com.ears.advcomp.ears3;
 
 import android.content.Intent;
-import android.graphics.Bitmap;
 import android.hardware.Camera;
-import android.net.Uri;
 import android.os.Environment;
 import android.support.constraint.ConstraintLayout;
 import android.support.v7.app.AppCompatActivity;
@@ -27,7 +25,6 @@ public class AddEarActivity extends AppCompatActivity {
     Button addEarButton;
     String mCurrentPhotoPath;
     Camera camera = Camera.open();
-    int pictureCount;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,14 +34,15 @@ public class AddEarActivity extends AppCompatActivity {
         cameraPreviewLayout = (ConstraintLayout) findViewById(R.id.addEarCameraPreview);
         cameraP = new CameraPreview(this,camera);
         Camera.Parameters parameters = camera.getParameters();
-        List<Camera.Size> sizes = parameters.getSupportedPreviewSizes();
-        Camera.Size optimalSize = getOptimalPreviewSize(sizes, getResources().getDisplayMetrics().widthPixels, getResources().getDisplayMetrics().heightPixels);
+        List<Camera.Size> previewSizes = parameters.getSupportedPreviewSizes();
+        Camera.Size optimalSize = getOptimalPreviewSize(previewSizes, getResources().getDisplayMetrics().widthPixels, getResources().getDisplayMetrics().heightPixels);
         parameters.setPreviewSize(optimalSize.width, optimalSize.height);
         parameters.setFocusMode(Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE);
+        List<Camera.Size> pictureSizes = parameters.getSupportedPictureSizes();
+        parameters.setPictureSize(pictureSizes.get(1).width,pictureSizes.get(1).height);
         parameters.setJpegQuality(100);
         parameters.setRotation(90);
         camera.setParameters(parameters);
-//        pictureCount = 5;
         cameraPreviewLayout.addView(cameraP);
         setListener();
     }
@@ -66,7 +64,7 @@ public class AddEarActivity extends AppCompatActivity {
             public void onClick(View view) {
                 Log.e("Darron", "onClick: Got Here 1");
                 camera.takePicture(null, null, mPicture);
-//                takeScreenshot();
+                Log.e("Darron", "onClick: What.");
                 //TODO Perform IRT
                 //TODO Perform Invariant moment calculation
                 //TODO Open AddEarFormActivity with inv moment in intent
@@ -162,41 +160,5 @@ public class AddEarActivity extends AppCompatActivity {
         // Save a file: path for use with ACTION_VIEW intents
         mCurrentPhotoPath = image.getAbsolutePath();
         return image;
-    }
-
-    private void takeScreenshot() {
-        Date now = new Date();
-        android.text.format.DateFormat.format("yyyy-MM-dd_hh:mm:ss", now);
-
-        try {
-            // image naming and path  to include sd card  appending name you choose for file
-            String mPath = getExternalFilesDir(Environment.DIRECTORY_PICTURES) + "/" + now + ".jpg";
-
-            // create bitmap screen capture
-            View v1 = findViewById(R.id.addEarSurfaceView);
-            v1.setDrawingCacheEnabled(true);
-            Bitmap bitmap = Bitmap.createBitmap(v1.getDrawingCache());
-            v1.setDrawingCacheEnabled(false);
-
-            File imageFile = new File(mPath);
-
-            FileOutputStream outputStream = new FileOutputStream(imageFile);
-            int quality = 100;
-            bitmap.compress(Bitmap.CompressFormat.JPEG, quality, outputStream);
-            outputStream.flush();
-            outputStream.close();
-            openScreenshot(imageFile);
-        } catch (Throwable e) {
-            // Several error may come out with file handling or OOM
-            e.printStackTrace();
-        }
-    }
-
-    private void openScreenshot(File imageFile) {
-        Intent intent = new Intent();
-        intent.setAction(Intent.ACTION_VIEW);
-        Uri uri = Uri.fromFile(imageFile);
-        intent.setDataAndType(uri, "image/*");
-        startActivity(intent);
     }
 }

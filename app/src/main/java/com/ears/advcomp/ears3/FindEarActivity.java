@@ -42,6 +42,11 @@ public class FindEarActivity extends AppCompatActivity {
         Camera.Size optimalSize = getOptimalPreviewSize(sizes, getResources().getDisplayMetrics().widthPixels, getResources().getDisplayMetrics().heightPixels);
         parameters.setPreviewSize(optimalSize.width, optimalSize.height);
         parameters.setFocusMode(Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE);
+        List<Camera.Size> pictureSizes = parameters.getSupportedPictureSizes();
+        parameters.setPictureSize(pictureSizes.get(1).width,pictureSizes.get(1).height);
+        parameters.setJpegQuality(100);
+        parameters.setRotation(90);
+        camera.setParameters(parameters);
         camera.setParameters(parameters);
         pictureCount = 5;
         cameraPreviewLayout.addView(cameraP);

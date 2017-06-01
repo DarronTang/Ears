@@ -50,14 +50,17 @@ public class MainActivity extends AppCompatActivity {
         addEar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                dispatchTakePictureIntent();
+                Intent intent = new Intent(getApplicationContext(),AddEarActivity.class);
+                startActivity(intent);
+//                dispatchTakePictureIntent(true);
             }
         });
         findEar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent findEarIntent = new Intent(getApplicationContext(),FindEarActivity.class);
-                startActivity(findEarIntent);
+                Intent intent = new Intent(getApplicationContext(),FindEarActivity.class);
+                startActivity(intent);
+//                dispatchTakePictureIntent(false);
             }
         });
 
@@ -84,9 +87,11 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    static final int REQUEST_TAKE_PHOTO = 1;
+    static final int PHOTO_ADD_EAR = 1;
 
-    private void dispatchTakePictureIntent() {
+    static final int PHOTO_FIND_EAR = 2;
+
+    private void dispatchTakePictureIntent(boolean add) {
         Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         // Ensure that there's a camera activity to handle the intent
         if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
@@ -105,7 +110,11 @@ public class MainActivity extends AppCompatActivity {
                         photoFile);
                 takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
                 takePictureIntent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-                startActivityForResult(takePictureIntent, REQUEST_TAKE_PHOTO);
+                if(add) {
+                    startActivityForResult(takePictureIntent, PHOTO_ADD_EAR);
+                } else {
+                    startActivityForResult(takePictureIntent, PHOTO_FIND_EAR);
+                }
             }
         }
     }
