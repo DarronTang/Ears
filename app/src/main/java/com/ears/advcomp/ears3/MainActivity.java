@@ -1,16 +1,19 @@
 package com.ears.advcomp.ears3;
 
 import android.Manifest;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Environment;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.Toast;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -22,14 +25,13 @@ public class MainActivity extends AppCompatActivity {
     static final String LOG_TAG = "Darron";
     static final String EAR_CSV = "/ears.csv";
 
-    // Used to load the 'native-lib' library on application startup.
-    static {
-        System.loadLibrary("native-lib");
-    }
-
     Button addEar;
     Button findEar;
     File earCSV;
+
+    static {
+        System.loadLibrary("native-lib");
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -77,6 +79,9 @@ public class MainActivity extends AppCompatActivity {
         } catch (IOException e){
             Log.e(LOG_TAG, "Error accessing file in onCreate(): " + e.getMessage());
         }
+
+        Toast.makeText(getApplicationContext(), String.valueOf(mineTest(2, "5")), Toast.LENGTH_LONG).show();
+
     }
 
     protected void checkPermissions(){
@@ -92,10 +97,6 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    /*
-     * A native method that is implemented by the 'native-lib' native library,
-     * which is packaged with this application.
-     */
-//    public native String stringFromJNI();
+    public native double mineTest(int i, String s);
 
 }
