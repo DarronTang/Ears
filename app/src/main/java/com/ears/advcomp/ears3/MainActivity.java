@@ -47,7 +47,6 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View view) {
                 Intent intent = new Intent(getApplicationContext(),AddEarActivity.class);
                 startActivity(intent);
-//                dispatchTakePictureIntent(true);
             }
         });
         findEar.setOnClickListener(new View.OnClickListener() {
@@ -55,7 +54,6 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View view) {
                 Intent intent = new Intent(getApplicationContext(),FindEarActivity.class);
                 startActivity(intent);
-//                dispatchTakePictureIntent(false);
             }
         });
 
@@ -68,19 +66,11 @@ public class MainActivity extends AppCompatActivity {
             }
             if(!earCSV.exists()) {
                 earCSV.createNewFile();
-                try {
-                    PrintWriter out = new PrintWriter(earCSV);
-                    out.write("first_name,last_name,inv_moment\n");
-                    out.close();
-                } catch (FileNotFoundException e) {
-                    Log.d(LOG_TAG, "File not found: " + e.getMessage());
-                }
             }
         } catch (IOException e){
             Log.e(LOG_TAG, "Error accessing file in onCreate(): " + e.getMessage());
         }
 
-        Toast.makeText(getApplicationContext(), String.valueOf(mineTest(2, "5")), Toast.LENGTH_LONG).show();
 
     }
 
@@ -97,6 +87,6 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    public native double mineTest(int i, String s);
+//    public native double mineTest(int i, String s);
 
 }

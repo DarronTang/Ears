@@ -18,6 +18,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -30,7 +31,8 @@ public class AddEarActivity extends AppCompatActivity {
     Button addEarButton;
     String mCurrentPhotoPath;
     Camera camera = Camera.open();
-    Bitmap bMap;
+    int photoNumber;
+    ArrayList<String> imagePaths;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,6 +53,8 @@ public class AddEarActivity extends AppCompatActivity {
         camera.setParameters(parameters);
         cameraPreviewLayout.addView(cameraP);
         setListener();
+        photoNumber = 0;
+        imagePaths = new ArrayList<String>();
     }
 
     @Override
@@ -68,7 +72,8 @@ public class AddEarActivity extends AppCompatActivity {
         addEarButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                camera.takePicture(null, null, mPicture);
+                Log.e("Darron", "onClick: Taking picture" );
+                takePhoto();
             }
         });
     }
@@ -100,6 +105,8 @@ public class AddEarActivity extends AppCompatActivity {
                     fos.close();
                     postPicture();
                     Log.e(LOG_TAG, "onPictureTaken: "+ pictureFile.getAbsolutePath());
+                    cameraP.start();
+                    Toast.makeText(getApplicationContext(),"Camera is ready, take another photo.",Toast.LENGTH_LONG);
                 } catch (FileNotFoundException e) {
                     Log.e(LOG_TAG, "File not found: " + e.getMessage());
                 } catch (IOException e) {
@@ -114,13 +121,20 @@ public class AddEarActivity extends AppCompatActivity {
     };
 
     private void postPicture(){
-        File root = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
-        bMap = BitmapFactory.decodeFile(root+"/"+mCurrentPhotoPath);
-        //TODO Perform IRT
-        //TODO Perform Invariant moment calculation
-        //TODO Open AddEarFormActivity with inv moment in intent
-        Intent addEarFormIntent = new Intent(getApplicationContext(),AddEarFormActivity.class);
-        startActivity(addEarFormIntent);
+        photoNumber++;
+        if(photoNumber == 5) {
+            Intent addEarFormIntent = new Intent(getApplicationContext(), AddEarFormActivity.class);
+            addEarFormIntent.putStringArrayListExtra("imagePaths", imagePaths);
+            startActivity(addEarFormIntent);
+        }
+    }
+    private void takePhoto() {
+        if (!(cameraP.isRunning())) {
+            return;
+        }
+
+        camera.takePicture(null, null, mPicture);
+        cameraP.onPictureTook();
     }
 
     public Camera.Size getOptimalPreviewSize(List<Camera.Size> sizes, int w, int h) {
@@ -169,6 +183,7 @@ public class AddEarActivity extends AppCompatActivity {
 
         // Save a file: path for use with ACTION_VIEW intents
         mCurrentPhotoPath = image.getAbsolutePath();
+        imagePaths.add(mCurrentPhotoPath);
         return image;
     }
 }
