@@ -29,10 +29,6 @@ public class MainActivity extends AppCompatActivity {
     Button findEar;
     File earCSV;
 
-    static {
-        System.loadLibrary("native-lib");
-    }
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -79,9 +75,6 @@ public class MainActivity extends AppCompatActivity {
         } catch (IOException e){
             Log.e(LOG_TAG, "Error accessing file in onCreate(): " + e.getMessage());
         }
-
-        Toast.makeText(getApplicationContext(), String.valueOf(mineTest(2, "5")), Toast.LENGTH_LONG).show();
-
     }
 
     protected void checkPermissions(){
@@ -96,7 +89,5 @@ public class MainActivity extends AppCompatActivity {
                     1);
         }
     }
-
-    public native double mineTest(int i, String s);
 
 }
