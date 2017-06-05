@@ -45,10 +45,10 @@ public class FindEarActivity extends AppCompatActivity {
         parameters.setPreviewSize(optimalSize.width, optimalSize.height);
         parameters.setFocusMode(Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE);
         List<Camera.Size> pictureSizes = parameters.getSupportedPictureSizes();
-        parameters.setPictureSize(pictureSizes.get(1).width,pictureSizes.get(1).height);
+        Camera.Size s = pictureSizes.get(19);
+        parameters.setPictureSize(s.width,s.height);
         parameters.setJpegQuality(100);
         parameters.setRotation(90);
-        camera.setParameters(parameters);
         camera.setParameters(parameters);
         pictureCount = 5;
         cameraPreviewLayout.addView(cameraP);
@@ -62,9 +62,6 @@ public class FindEarActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 camera.takePicture(null, null, mPicture);
-                File root = Environment.getExternalStorageDirectory();
-                Log.e("Darron", "onClick: "+root);
-//                Bitmap bMap = BitmapFactory.decodeFile(root+"/images/01.jpg");
                 //TODO Perform IRT
                 //TODO Perform Invariant moment calculation
                 //TODO Find closest match in csv
@@ -158,6 +155,9 @@ public class FindEarActivity extends AppCompatActivity {
                     fos.write(data);
                     fos.close();
                     Log.e("Darron", "onPictureTaken: "+ pictureFile.getAbsolutePath());
+                    File root = Environment.getExternalStorageDirectory();
+                    Bitmap bMap = BitmapFactory.decodeFile(root+"/images/01.jpg");
+                    //TODO Start LBP Detection black box
                 } catch (FileNotFoundException e) {
                     Log.d("Darron", "File not found: " + e.getMessage());
                 } catch (IOException e) {
