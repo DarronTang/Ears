@@ -15,7 +15,6 @@ import java.util.ArrayList;
 import java.util.Scanner;
 
 import static com.ears.advcomp.ears3.MainActivity.EAR_CSV;
-import static com.ears.advcomp.ears3.MainActivity.LOG_TAG;
 
 public class AddEarFormActivity extends AppCompatActivity {
 
@@ -25,6 +24,8 @@ public class AddEarFormActivity extends AppCompatActivity {
     File earCSV;
     int id;
     Button addEar;
+
+    private static final String LOG_TAG = "Darron-AddEarForm";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,18 +61,18 @@ public class AddEarFormActivity extends AppCompatActivity {
 
     private void addEar(){
         try {
-            Log.e(LOG_TAG, "addEar: Adding Ear." );
+            Log.e(LOG_TAG, "Adding Ear." );
             File storageDir = getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS);
             earCSV = new File(storageDir.getAbsolutePath() + "/ears.csv");
             PrintWriter out = new PrintWriter(earCSV);
-            Log.e(LOG_TAG, "addEar: "+imagePaths.size() );
+            Log.e(LOG_TAG, String.valueOf(imagePaths.size()));
             for(int i = 0; i < imagePaths.size(); i++) {
                 String path = imagePaths.get(i);
                 out.append(String.valueOf(id) + ","+firstName.getText() + "_" + lastName.getText() + "," + path + "\n");
             }
             out.close();
         } catch (IOException e){
-            Log.e("Darron", "onCreate: "+e.getMessage());
+            Log.e(LOG_TAG, "addEar(): " + e.getMessage());
         }
         finish();
     }

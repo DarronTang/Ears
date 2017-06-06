@@ -1,9 +1,9 @@
 package com.ears.advcomp.ears3;
 
-import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.hardware.Camera;
+import android.net.Uri;
 import android.os.Environment;
 import android.support.constraint.ConstraintLayout;
 import android.support.v7.app.AppCompatActivity;
@@ -20,6 +20,10 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+import java.util.Scanner;
+
+import static com.ears.advcomp.ears3.MainActivity.EAR_CSV;
+import static com.ears.advcomp.ears3.MainActivity.LOG_TAG;
 
 public class FindEarActivity extends AppCompatActivity {
 
@@ -29,7 +33,22 @@ public class FindEarActivity extends AppCompatActivity {
     String mCurrentPhotoPath;
     Camera camera = Camera.open();
     int pictureCount;
-    File image;
+
+    private int earTag = 0;
+    private File earCsvFile;
+    private static final String haarLeftPath =
+            Uri.parse("android.resource://com.ears.advcomp.ears3/"
+                    + R.xml.haarcascade_mcs_leftear).getPath();
+    private static final String haarRightPath =
+            Uri.parse("android.resource://com.ears.advcomp.ears3/"
+                    + R.xml.haarcascade_mcs_rightear).getPath();
+    private String inputImage = "";
+
+    private static final String LOG_TAG = "Darron-FindEarActivity";
+
+    static {
+        System.loadLibrary("native-lib");
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,6 +72,8 @@ public class FindEarActivity extends AppCompatActivity {
         pictureCount = 5;
         cameraPreviewLayout.addView(cameraP);
         setListener();
+
+
     }
 
     private void setListener(){
@@ -62,11 +83,6 @@ public class FindEarActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 camera.takePicture(null, null, mPicture);
-                //TODO Perform IRT
-                //TODO Perform Invariant moment calculation
-                //TODO Find closest match in csv
-                Toast.makeText(getApplicationContext(), "Closest Match: ",
-                        Toast.LENGTH_LONG).show();
             }
         });
     }
@@ -104,6 +120,7 @@ public class FindEarActivity extends AppCompatActivity {
         }
         return optimalSize;
     }
+
     public File createImageFile() throws IOException {
         // Create an image file name
         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
@@ -145,28 +162,49 @@ public class FindEarActivity extends AppCompatActivity {
             File pictureFile;
             try {
                 pictureFile = createImageFile();
-                if (pictureFile == null){
-                    Log.d("Darron", "Error creating media file, check storage permissions ");
+                if (pictureFile == null) {
+                    Log.d(LOG_TAG, "Error creating media file, check storage permissions ");
                     return;
                 }
+                FileOutputStream fos = new FileOutputStream(pictureFile);
+                fos.write(data);
+                fos.close();
 
-                try {
-                    FileOutputStream fos = new FileOutputStream(pictureFile);
-                    fos.write(data);
-                    fos.close();
-                    Log.e("Darron", "onPictureTaken: "+ pictureFile.getAbsolutePath());
-                    File root = Environment.getExternalStorageDirectory();
-                    Bitmap bMap = BitmapFactory.decodeFile(root+"/images/01.jpg");
-                    //TODO Start LBP Detection black box
-                } catch (FileNotFoundException e) {
-                    Log.d("Darron", "File not found: " + e.getMessage());
-                } catch (IOException e) {
-                    Log.d("Darron", "Error accessing file: " + e.getMessage());
-                }
+                String name = recognise();
 
-            } catch(Exception e){
-                Log.e("Darron", "onPictureTaken:" + e.getMessage());
+                Toast.makeText(getApplicationContext(), "Closest Match: " + name,
+                        Toast.LENGTH_LONG).show();
+                Log.e(LOG_TAG, "onPictureTaken: " + pictureFile.getAbsolutePath());
+            } catch (FileNotFoundException e) {
+                Log.d(LOG_TAG, "File not found: " + e.getMessage());
+            } catch (IOException e) {
+                Log.d(LOG_TAG, "Error accessing file: " + e.getMessage());
+            } catch(Exception e) {
+                Log.e(LOG_TAG, "onPictureTaken:" + e.getMessage());
             }
         }
     };
+
+    private String recognise() {
+        int result = earRec(earCsvFile.getPath(), haarLeftPath, haarRightPath, mCurrentPhotoPath);
+        String storageDir = getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS).getAbsolutePath();
+        earCsvFile = new File(storageDir + EAR_CSV);
+        try {
+            Scanner inputStream = new Scanner(earCsvFile);
+            while (inputStream.hasNext()) {
+                String[] csvData = inputStream.next().split(",");
+                if (Integer.parseInt(csvData[0]) == result) {
+                    return csvData[1];
+                }
+            }
+        } catch (FileNotFoundException e) {
+            Log.e(LOG_TAG, e.getMessage());
+        }
+        return "Can't detect who you are lmao";
+    }
+
+    public native int earRec(String csvPath,
+                             String haarLeftPath,
+                             String haarRightPath,
+                             String inputImage);
 }
